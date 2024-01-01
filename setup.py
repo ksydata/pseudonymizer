@@ -8,14 +8,14 @@ with open("README.md", "r", encoding = "utf-8") as fh:
 # 모듈에서 사용가능한 함수의 목록
         
 setuptools.setup(
-    name = "pseudonymizer,
+    name = "pseudonymizer",
     version = "0.1.1",
     author "SY",
     author_email = "ksydata01@gmail.com",
-    description = "pseudonymizer-for-protect-privatedata",
+    description = "pseudonymizer-to-protect-private-personal-data",
     long_description = open("README.md").read()
     long_description_content_type = "text/markdown",
-    url = "https://github.com/ksydata/",
+    url = "https://github.com/ksydata/pseudonymizer",
     # 모듈 의존성 관리
     install_requires = [
         "pandas==1.4.4",
