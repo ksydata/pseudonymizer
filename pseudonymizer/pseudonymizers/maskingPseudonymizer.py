@@ -2,6 +2,8 @@ from pseudonymizer.pseudonymizers.nameMasking import NameMaskingModule
 from pseudonymizer.pseudonymizers.emailMasking import EmailMaskingModule
 from pseudonymizer.pseudonymizers.residentNumMasking import ResidentNumberMaskingModule
 from pseudonymizer.pseudonymizers.businessNumMasking import BusinessNumberMaskingModule
+from pseudonymizer.pseudonymizers.phoneNumMasking import PhoneNumberMaskingModule
+
 import re
 from typing import *
 
@@ -15,6 +17,7 @@ class MaskingPseudonymizer(Pseudonymizer):
         self.name_masker = NameMaskingModule()
         self.resident_num_masker = ResidentNumberMaskingModule()
         self.business_num_masker = BusinessNumberMaskingModule(masking_part)
+        self.phone_num_masker = PhoneNumberMaskingModule()
 
     def pseudonymizeData(self, data):
         if data_type == "name":
@@ -25,6 +28,8 @@ class MaskingPseudonymizer(Pseudonymizer):
             return self.resident_num_masker.pseudonymizeData(data)
         elif data_type == "business_number":
             return self.business_num_masker.pseudonymizeData(data)
+        elif data_type == "phone_number":
+            return self.phone_num_masker.pseudonymizeData(data)
         else:
             raise ValueError("유효한 마스킹 대상 개인식별정보 데이터 타입이 아닙니다.")
             
