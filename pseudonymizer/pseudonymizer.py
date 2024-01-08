@@ -1,6 +1,6 @@
 # ./pseudonymizer/pseudonymizer.py
 
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 import pandas as pd
 
 
@@ -31,7 +31,7 @@ class Pseudonym:
         self._pseudonymDictionary[column] = pseudonymizers
         
     def pseudonymizeData(self):
-        """가명처리 기법을 해당 컬럼에 적용하는 메서드"""
+        """가명처리 기법을 해당 컬럼에 적용하는 메서드(apply함수를 활용하여 데이터프레임 모든 행, 특정 열에 비식별조치를 취하는 접근방식) """
         for column, pseudonymizers in self._pseudonymDictionary.items():
             for pseudonymizer in pseudonymizers:
                 self._dataframe[column] = self._dataframe[column].apply(pseudonymizer.pseudonymizeData)
