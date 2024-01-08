@@ -21,7 +21,7 @@ class EmailMaskingModule(Pseudonymizer):
             # \. : 도메인과 최상위 도메인(TLD)에 대한 구분자 마침표 
             # {,} : 중괄호 안에 표기된 범위만큼 반복되는 패턴을 매칭. {3,5}는 3~5회 매칭을 의미함
             
-        if match:
+        if pattern_match:
             local_part = pattern_match.group(0)
             domain_part = pattern_match.group(1)
             tld_part = pattern_math.group(2)
