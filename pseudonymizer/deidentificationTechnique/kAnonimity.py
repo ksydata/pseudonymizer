@@ -3,11 +3,6 @@
 from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalent_class import EquivalentClass
 from typing import *
 
-# ./pseudonymizer/pseudonymizer/deidentificationTechnique/kAnonimity.py
-
-# from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalent_class import EquivalentClass
-# from typing import *
-
 class K_Anonimyity(EquivalentClass):
     """개별 레코드가 최소한 K개 이상 동일한 속성값을 가지도록 하는 K-익명성 클래스
     
