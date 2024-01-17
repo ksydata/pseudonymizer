@@ -1,7 +1,27 @@
-# ./pseudonymizer/pseudonymizer/deidentificationTechnique
+# ./pseudonymizer/pseudonymizer/deidentificationTechnique/equivalent_class.py
+
+from typing import *
 
 class EquivalentClass:
-    """개인식별가능정보 속성을 기준으로 데이터를 그룹화하는 부모 클래스"""
+    """개인식별가능정보 속성을 기준으로 데이터를 그룹화하는 부모 클래스
+    
+    준식별자를 이용한 그룹화 기법 의사코드
+    --------------------------------------
+    data grouping using quasi-identifier
+    Input : PI(Personal Information)
+    Output : Grouped PI
+
+    grouped_PI = dict()
+    for identifier, quasi in PI.items():
+        key = quasi[0] + quasi[1] + quasi[2] + quasi[3]
+        if key in grouping_PI:
+            grouping_PI[key].append(identifier)
+        else:
+            grouping_PI[key] = []
+            grouping_PI[key].append[identifier]
+
+        return grouping_PI
+    """
     def __init__(self, dataframe):
         self._dataframe = dataframe
         self.equivalent_class = {}
@@ -27,4 +47,3 @@ class EquivalentClass:
             unique_record = self._dataframe.loc[index_value, :].drop_duplicates()
             # set(self._dataframe.loc[index_value, :])
             self.equivalent_class[group_key] = unique_records.index.tolist()
-            
