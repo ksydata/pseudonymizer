@@ -1,0 +1,47 @@
+# ./pseudonymizer/pseudonymizer/deidentificationTechnique/lDiversity.py
+
+from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalent_class import EquivalentClass
+from typing import *
+
+class L_Diversity(K_Anonymity):
+    """각 동질집합 내 특정 민감 속성의 빈도가 L값 이상의 다양성을 가지도록 하는 L-다양성 클래스
+    k-익명성 보호 모델 적용 결과에 l-다양성 보호 모델을 적용
+    
+    k-익명성 처리가 그룹 단위로 구현된 상황에서 l-다양성 알고리즘 의사코드
+    ----------------------------------------------------------------------
+    basic l-diversity algorithm
+    Input : k_data, limited_l
+    Output : l_data
+    
+    l_data = dict()
+    for key, identifiers in k_data.items():
+        l_list = []
+        for identifier in identifiers:
+            # k익명성을 만족하는 데이터의 식별자값을 가지고 
+            user_info = data[identifier]
+            # 해당 식별자값의 민감정보를 가져오는 부분
+            user_sa = user_info[4]
+            if user_sa in l_list:
+                pass
+    """
+    def __init__(self, dataframe):
+        """모듈의 유연성을 제공하기 위해 K익명성 클래스를 확장하여 손자 클래스로 정의"""
+        super().__init__(dataframe)
+        self.L_data = None
+        
+    def applyLDiversity(self, K: int, L: int, attributes: List[str], sensitive_attribute: str):
+        """두 모형을 동시에 적용할 경우 중복이 발생할 가능성이 높아 조합적인 보호 모델을 설계하여 중복을 최소화하는 메서드"""
+        super().applyKAnonymity(K, attributes)
+        L_data = dict()
+        
+        for group_key, index_value in self.K_data.items():
+            unique_sensitive_values = self._dataframe.loc[index_value, 
+                                                          sensitive_attribute].unique()
+            # self._dataframe.iloc[index_value, self._dataframe.columns.get_loc(column_name)]
+            if len(unique_sensitive_values) >= L:
+                L_data[group_key] = index_value
+        self.L_data = L_data
+        return L_data
+    
+    def applyLocalLDiversity(self):
+        pass
