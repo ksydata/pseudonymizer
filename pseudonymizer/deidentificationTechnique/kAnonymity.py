@@ -3,12 +3,7 @@
 from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalent_class import EquivalentClass
 from typing import *
 
-# ./pseudonymizer/pseudonymizer/deidentificationTechnique/kAnonimity.py
-
-# from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalent_class import EquivalentClass
-# from typing import *
-
-class K_Anonimyity(EquivalentClass):
+class K_Anonymity(EquivalentClass):
     """개별 레코드가 최소한 K개 이상 동일한 속성값을 가지도록 하는 K-익명성 클래스
     
     데이터 그룹화가 적용된 k-익명성 알고리즘 의사코드
@@ -26,6 +21,7 @@ class K_Anonimyity(EquivalentClass):
     """
     def __init__(self, dataframe):
         super().__init__(dataframe)
+        self.K_data = None
         
     def applyKAnonymity(self, K: int, attributes: List[str]) -> Dict:
         K_data = dict()
@@ -37,5 +33,4 @@ class K_Anonimyity(EquivalentClass):
             # index_value = identifiers
             if K_anonymity >= K:
                 K_data[group_key] = index_value
-                
-        return K_data
+        self.K_data = K_data
