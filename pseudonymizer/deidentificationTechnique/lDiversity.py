@@ -28,7 +28,7 @@ class L_Diversity(K_Anonymity):
         """모듈의 유연성을 제공하기 위해 K익명성 클래스를 확장하여 손자 클래스로 정의"""
         super().__init__(dataframe)
         self.L_data = None
-        sensitive_attribute = None
+        self.sensitive_attribute = None
         self.LocalL_data = None
         
     def applyLDiversity(self, K: int, L: int, attributes: List[str], sensitive_attribute: str):
