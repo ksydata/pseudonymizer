@@ -36,6 +36,7 @@ class T_Closeness(EquivalentClass):
             hap = float(hap) / float(total_length)
             return hap
     """
+
     def __init__(self, dataframe):
         super().__init__(dataframe)
         self.T_data = None
@@ -43,14 +44,24 @@ class T_Closeness(EquivalentClass):
         self.tolerance = None
         
     def checkSensitivesDistribution(self, sensitive_attribute: str):
-        pass
+        """개인식별가능정보(준식별자)의 모든 가능한 조합 n개의 관심 대상값
+        (sensitive_attribute)의 분포와 전체 집단의 분포의 거리 최댓값이 <= t로 규정할 때
+        분포를 계산하는 메서드"""
+        self.sensitive_attribute = sensitive_attribute
+        if self._dataframe[self.sensitive_attribute].dtype =="int" or "float":
+            return "numeric_type"
+        elif self._dataframe[self.sensitive_attribute].dtype == "object":
+            return "string_type"
+        elif self._dataframe[self.sensitive_attribute].dtype == "category":
+            return "factor_type"
+        else: ValueError("입력받은 {}은 유효한 자료형이 아닙니다."
+                         .format(self._datafrmae[self.sensitive_attribute].dtype))    
 
     def applyTCloseness(self, attributes: List[str], tolerance: float):
         """tolerance: 허용가능한 확률분포 차이의 범위를 정의하여 T-근접성을 적용하는 메서드"""
         T_data = dict()
-        self.sensitive_attribute = sensitive_attribute
-        self.tolerance = tolerance
-        
+        self.tolerance = tolerance 
+        # threshold
         super().categorizeEquivalentClass(attributes)
         
         for group_key, index_value in self.equivalent_class.items():
