@@ -16,13 +16,23 @@ class PrivacyPreservingModel:
         
     def applyKAnonymityOrLDiversity(self, method: str, **kwargs):
         """K-익명성과 L-다양성 모델을 선택적으로 적용하는 메서드
+        input
+        -----
         method: 프라이버시 보호 모델 메서드를 받고, 
         keyword arguments에 딕셔너리 형식으로 각 기법에 필요한 파라미터를 받아옴"""
-        pass
+        if method == "K":
+            self.Kanonymity.applyKAnonymity(**kwargs)
+            return self.Kanonymity.K_data
+        elif method == "L":
+            self.Ldiversity.applyLDiversity(**kwargs)
+            return self.Ldiversity.L_data
+        elif method == "LL":            
+            self.Ldiversity.applyLocalLDiversity(**kwargs)
+            return self.Ldiversity.LocalL_data
 
-    def applyTCloseness(self, attributes: List[str], sensitive_attribute: str, tolerance: float):
-        self.Tcloseness.checkSensitivesDistribution(sensitive_attribute)
-        self.Tcloseness.applyTCloseness(attributes, tolerance)
+    def applyTCloseness(self, aquasi_identifiers: List[str], sensitive_attribute: str, tolerance: float):
+        self.Tcloseness.applyTCloseness(quasi_identifiers, tolerance, sensitive_attribute)
+        return self.Tcloseness.T_data
     
     def __str__(self):
         """동질집합에 대한 정보를 문자열로 반환하는 메서드"""
