@@ -48,14 +48,23 @@ class T_Closeness(EquivalentClass):
         (sensitive_attribute)의 분포와 전체 집단의 분포의 거리 최댓값이 <= t로 규정할 때
         분포를 계산하는 메서드"""
         self.sensitive_attribute = sensitive_attribute
-        if self._dataframe[self.sensitive_attribute].dtype =="int" or "float":
-            return "numeric_type"
-        elif self._dataframe[self.sensitive_attribute].dtype == "object":
-            return "string_type"
+        self.sensitive_vector = self._dataframe[self.sensitive_attribute]
+        if self.sensitive_vector.dtype =="int" or "float":
+            return prob
+        elif self.sensitive_vector.dtype == "object":
+            distance = {v: count/len(v) 
+                        for (v, count) 
+                        in Counter(self.sensitive_vector).items()}
         elif self._dataframe[self.sensitive_attribute].dtype == "category":
-            return "factor_type"
+            distance = {v: count/len(v) 
+                        for (v, count) 
+                        in Counter(self.sensitive_vector).items()}
         else: ValueError("입력받은 {}은 유효한 자료형이 아닙니다."
                          .format(self._datafrmae[self.sensitive_attribute].dtype))    
+    
+    def earthMoversDistance(self):
+        """scipy.wasserstein_distance(data_sensitivity, data_population)"""
+        pass
 
     def applyTCloseness(self, attributes: List[str], tolerance: float):
         """tolerance: 허용가능한 확률분포 차이의 범위를 정의하여 T-근접성을 적용하는 메서드"""
@@ -68,6 +77,7 @@ class T_Closeness(EquivalentClass):
             distribution_sensitives = self._dataframe.loc[index_value, sensitive_attribute].value_count(normalize = True)
             # value_counts(normalize = True) = value_counts() / sum 
             # Earth's Mover Distance
+            self.earthMoversDistance
             if self.checkTCloseness(distribution_sensitives, self.tolerance):
                 T_data[group_key] = index_value
         
