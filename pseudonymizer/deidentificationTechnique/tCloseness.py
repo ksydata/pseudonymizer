@@ -48,15 +48,15 @@ class T_Closeness(EquivalentClass):
         if sensitive_vector.dtype == "int" or "float":
             ordered_vector = np.sort(sensitive_vector)
             distribution = {v: n/len(ordered_vector)  for (v, n)
-                            in ordered_vector, range(len(ordered_vector))}
+                            in zip(ordered_vector, list(range(len(ordered_vector))))}
         elif sensitive_vector.dtype == "object":
             distribution = {v: count/len(v) for (v, count) 
                             in Counter(sensitive_vector).items()}
         elif sensitive_vector.dtype == "category":
             distribution = {v: count/len(v) for (v, count) 
                             in Counter(sensitive_vector).items()}
-        else: ValueError("입력받은 {}은 유효한 자료형이 아닙니다."
-                         .format(self._datafrmae[self.sensitive_attribute].dtype))
+        else: ValueError("입력받은 {}은 유효한 자료형이 아닙니다.".format(
+            self._datafrmae[self.sensitive_attribute].dtype))
         return distribution
     
     def earthMoversDistance(self, qi_dist, total_dist):
@@ -68,23 +68,25 @@ class T_Closeness(EquivalentClass):
     def applyTCloseness(self, quasi_identifiers: List[str], tolerance: float, sensitive_attribute: str):
         """tolerance: 허용가능한 확률분포 차이의 범위를 정의하여 T-근접성을 적용하는 메서드"""
         T_data, qi_distribution = dict()
-        self.tolerance = tolerance # threshold
-        vector = self._dataframe[sensitive_attribute]
-        super().categorizeEquivalentClass(quasi_identifiers)
-        
-        for group_key, index_value in self.equivalent_class.items():
-            # 1. Empirical Cummulative Probability Distribution
-            qi_distribution[group_key] = self.checkSensitivesDistribution(       
-                vector[index_value], sensitive_attribute)
-            total_distribution[group_key] = self.checkSensitivesDistribution(       
-                vector, sensitive_attribute)
-                # self._dataframe.loc[index_value, sensitive_attribute]
-                # .value_count(normalize = True) = .value_counts() / sum 
-            
-            # 2. Earth's Mover Distance
-            emd = self.earthMoversDistance(qi_distribution, total_distribution)
-            
-            # 3.
-            if emd < tolerance:
-                T_data[group_key] = index_value
-        self.T_data = T_data
+
+        if 0 <= tolerance <= 1: 
+            # threshold
+            vector = np.array(self._dataframe[sensitive_attribute])
+            super().categorizeEquivalentClass(quasi_identifiers)
+
+            for group_key, index_value in self.equivalent_class.items():
+                # 1. Empirical Cummulative Probability Distribution
+                qi_distribution[group_key] = self.checkSensitivesDistribution(vector[index_value], sensitive_attribute)
+                total_distribution[group_key] = self.checkSensitivesDistribution(vector, sensitive_attribute)
+                    # self._dataframe.loc[index_value, sensitive_attribute]
+                    # .value_count(normalize = True) = .value_counts() / sum 
+
+                # 2. Earth's Mover Distance
+                emd = self.earthMoversDistance(qi_distribution, total_distribution)
+
+                # 3.
+                if emd < tolerance:
+                    T_data[group_key] = index_value
+            self.T_data = T_data
+        else: 
+            ValueError("입력받은 {}은 허용가능한 동질집합과 전체집단 간 확률분포 차이의 범위로서 유효하지 않습니다.".format(tolerance))
