@@ -45,7 +45,7 @@ class T_Closeness(EquivalentClass):
         sensitive_vector = data_set[sensitive_attribute]
         
         # 민감속성의 고유한 값과 그 값의 비율 {v: count/len(V)}
-        if sensitive_vector.dtype == "int" or "float":
+        if sensitive_vector.dtype is in ["int", "float"]:
             ordered_vector = np.sort(sensitive_vector)
             distribution = {v: n/len(ordered_vector)  for (v, n)
                             in zip(ordered_vector, list(range(len(ordered_vector))))}
