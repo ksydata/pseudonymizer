@@ -10,8 +10,7 @@ class Pseudonymizer(ABC):
     def pseudonymizeData(self, value):
         """확장성을 갖춘 가명처리 클래스를 만들어 특정 가명처리 기법으로 구체화하기 위한 추상 메서드"""
         pass
-
-     
+    
 class Pseudonym:
     def __init__(self, dataframe):
         """원본정보(재현데이터)와 가명처리 구체 클래스를 인스턴스 변수로 선언하는(초기화) 생성자"""
@@ -35,7 +34,11 @@ class Pseudonym:
                 # 딕셔너리에서 키 값으로 리스트(동적 타입)는 사용할 수 없으므로 튜플로 변환
                 self.equivalent_class[key] = data.index.tolist()
                 # 동질 집합에 해당하는 행(레코드)의 인덱스 번호를 키 값으로 조회되도록 저장
-        
+                
+    def countEquivalentClass(self):
+        for group_key, index_value in self.equivalent_class.items():
+            print(group_key, len(index_value))
+            
     def addPseudonymizer(self, pseudonymizer):
         """가명처리 추상 클래스에 대한 자식 클래스를 입력받는 pseudonymizer파라미터를 가지는 메서드"""
         if isinstance(pseudonymizer, Pseudonymizer):
@@ -56,3 +59,4 @@ class Pseudonym:
     def getPseudonymizedDataframe(self):
         """가명처리 데이터 반환"""
         return self._dataframe
+    
