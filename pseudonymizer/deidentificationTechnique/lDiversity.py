@@ -43,8 +43,9 @@ class L_Diversity(K_Anonymity):
             # self._dataframe.iloc[index_value, self._dataframe.columns.get_loc(column_name)]
             if len(unique_sensitive_values) >= L:
                 L_data[group_key] = index_value
+            else:
+                print(group_key, len(unique_sensitive_values))
         self.L_data = L_data
-        # return L_data
     
     def applyLocalLDiversity(self, local_L: int):
         """특정 민감정보의 속성값이 일부 레코드(행)에 집중되는 문제에 따라
@@ -55,5 +56,6 @@ class L_Diversity(K_Anonymity):
             count_local_diversity = self._dataframe.loc[index_value, self.sensitive_attribute].value_counts()
             if count_local_diversity.min() >= local_L: 
                 LocalL_data[group_key] = index_value
+            else:
+                print(group_key, len(count_local_diversity))
         self.LocalL_data = LocalL_data
-        # return LocalL_data
