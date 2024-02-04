@@ -33,4 +33,6 @@ class K_Anonymity(EquivalentClass):
             # index_value = identifiers
             if K_anonymity >= K:
                 K_data[group_key] = index_value
+            else:
+                print(group_key, len(index_value))
         self.K_data = K_data
