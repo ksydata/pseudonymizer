@@ -1,4 +1,4 @@
-# from pseudonymizer.pseudonymizer import Pseudonymizer
+from pseudonymizer.pseudonymizer import Pseudonymizer
 from datetime import datetime
 
 class CategorizationOfCharacter(Pseudonymizer):
@@ -27,7 +27,7 @@ class CategorizationOfCharacter(Pseudonymizer):
         elif self.category_type == "user_definition":
             return self.pseudonymizeDefinition(input_string, category_mapping)
         else:
-            pass
+            ValueError(f"{self.category_type}은 유효한 범주화 기법 적용 유형이 아닙니다.")
     
     def pseudonymizeDate(self, datetime):
         """개인과 관련된 날짜 정보(자격 취득일짜, 합격일 등)는 연 단위로 처리"""
@@ -35,14 +35,18 @@ class CategorizationOfCharacter(Pseudonymizer):
             date = datetime.strptime(datetime, "%Y-%m")
             # 연월만 남기고 일시 삭제
         except ValueError:
-            return "{datetime}은 유효한 날짜 형식이 아닙니다."
+            return f"{datetime}은 유효한 날짜 형식이 아닙니다."
     
     def pseudonymizeDefinition(self, string_tobeclassified. category_mapping: dict):
-        """직접 특정 범주에 속하는 문자열 리스트를 딕셔너리 키, 값으로 입력"""
+        """직접 특정 범주에 속하는 문자열 리스트를 딕셔너리 키, 값으로 입력
+        서울특별시 141,704개의 고유필지 → 2023년 기준 서울특별시 1,650개의 골목상권코드으로 그룹핑할 수 있도록 유형화
+        코스피 상장주식회사 종목 810개 → 24개 업종 분류로 범주화"""
         for category, string_list in self.category_mapping.items():
             # key는 범주이면서 value는 문자열 리스트일 때
             if string_tobeclassified is in string_list: 
                 # 입력받은 문자열이 for루프에 걸린 문자열 리스트의 원소인 경우 해당 범주형 반환
+                # 접근 연산 시간복잡도를 줄이기 위한 시도는?
+                # 현재의 배열과 같이 링크드 리스트의 경우 원하는 노드에 접근하는 시간은 몇 번째 인덱스인지에 비례
                 return category
             return "other types"
             # 없으면 기타
