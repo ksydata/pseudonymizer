@@ -1,6 +1,6 @@
 # ./pseudonymizer/pseudonymizer/deidentificationTechnique/lDiversity.py
 
-from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalent_class import EquivalentClass
+from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalentClass import EquivalentClass
 from typing import *
 
 class L_Diversity(K_Anonymity):
@@ -57,5 +57,9 @@ class L_Diversity(K_Anonymity):
             if count_local_diversity.min() >= local_L: 
                 LocalL_data[group_key] = index_value
             else:
-                print(group_key, len(count_local_diversity))
+                for sensitive_attr, freq in count_local_diversity.items():
+                    if freq == count_local_diversity.min():
+                        print(group_key, sensitive_attr, freq)
+                    else:
+                        pass
         self.LocalL_data = LocalL_data
