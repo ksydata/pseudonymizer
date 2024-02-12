@@ -1,6 +1,6 @@
 # ./pseudonymizer/pseudonymizer/deidentificationTechnique/kAnonimity.py
 
-from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalent_class import EquivalentClass
+from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalentClass import EquivalentClass
 from typing import *
 
 class K_Anonymity(EquivalentClass):
