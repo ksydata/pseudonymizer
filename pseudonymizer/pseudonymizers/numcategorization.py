@@ -19,11 +19,29 @@ class CategorizationOfNumeric(Pseudonymizer):
         else: 
             pass
     
-    def pseudonymizeAge(self, birthdate, grouping_standard):
+    def pseudonymizeAge(self, birthday, grouping_standard):
         """연령 범주화 메서드
         일반적으로 나이 + 주소 + 성별 조합(동질 집합)이 재식별 가능성 있으므로
-        5세, 10세 단위 또는 초중후반으로 나이 범주화"""
-        pass
+        5세, 10세 단위 또는 초중후반으로 만 나이 범주화"""
+        currentdate = datetime.now().date()
+        if (currentdate.month, currentdate.day) < (birthday.month, birthday.day):
+        # 아직 현재 날짜가 생일 전인 경우 만 나이 계산 시 한 살 제외
+            age = currentdate.year - birthday.year - 1
+        else:
+            age = currentdate.year - birthday.year
+        
+        if grouping_standard in ["3bin", "5bin", "10bin"]:
+            if grouping_standard == "3bin":
+                # 0,1,2,3(초반) / 4,5,6(중반) / 7,8,9(후반)
+                pass
+            elif grbitouping_standard == "5bin":
+                # 0,1,2,3,4(초반) / 5,6,7,8,9(후반)
+                return f"{(age // 10) * 10}대 초반" if (age % 10) < 5 else f"{(age // 10) * 10}대 후반"
+            elif grouping_standard == "10bin":
+                # 10대~100대
+                return f"{(age // 10) * 10}대"
+            else:
+                raise ValueError("입력받은 {}은 연령 범주화 기준으로 유효하지 않습니다.".format(grouping_standard))
         
     def pseudonymizeIncome(self, income, grouping_standard):
         """소득금액 범주화 메서드
