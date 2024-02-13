@@ -17,7 +17,7 @@ class CategorizationOfNumeric(Pseudonymizer):
         elif self.numeric_type == "user_definition":
             return self.pseudonymizeDefinition(input_numeric, grouping_standard)
         else: 
-            pass
+            raise ValueError(f"{self.numeric_type}은 유효한 범주화 기법 적용 유형이 아닙니다.")
     
     def pseudonymizeAge(self, birthday, grouping_standard):
         """연령 범주화 메서드
@@ -32,21 +32,40 @@ class CategorizationOfNumeric(Pseudonymizer):
         
         if grouping_standard in ["3bin", "5bin", "10bin"]:
             if grouping_standard == "3bin":
-                # 0,1,2,3(초반) / 4,5,6(중반) / 7,8,9(후반)
-                pass
-            elif grbitouping_standard == "5bin":
-                # 0,1,2,3,4(초반) / 5,6,7,8,9(후반)
+            # 0,1,2(초반) / 3,4,5,6(중반) / 7,8,9(후반)
+                sort = (age % 10) // 3
+                range = (age // 10) * 10
+                if sort == 0:
+                    return f"{range}대 초반"
+                elif sort == 1:
+                    return f"{range}대 중반"
+                elif sort == 2:
+                    return f"{range}대 후반"
+                else: 
+                    return
+            elif grouping_standard == "5bin":
+            # 0,1,2,3,4(초반) / 5,6,7,8,9(후반)
                 return f"{(age // 10) * 10}대 초반" if (age % 10) < 5 else f"{(age // 10) * 10}대 후반"
             elif grouping_standard == "10bin":
-                # 10대~100대
+            # 10대~100대
                 return f"{(age // 10) * 10}대"
             else:
                 raise ValueError("입력받은 {}은 연령 범주화 기준으로 유효하지 않습니다.".format(grouping_standard))
         
     def pseudonymizeIncome(self, income, grouping_standard):
         """소득금액 범주화 메서드
-        소득을 전체 대상자를 20분위(보험료 분위)로 균등 분할"""
-        pass
+        소득을 전체 대상자를 9분위(2024년 건강보험료 1인 기준 소득분위)로 균등 분할"""
+        if grouping_standard is None:
+            threshold_list= [1841500, 2025500, 2675000, 2897000, 3120000, 3343000, 3566000, 3789000, 4012000]
+            for index, threshold in enumerate(threshold_list, start = 1):
+                if income <= threshold:
+                    return f"{index}분위"
+        else:
+        # While grouping_standard True:
+            grouping_standard 
+            # 오름차순 정렬: 일반적으로 사용하는 버블 정렬은 O(N**2)이므로 병합 정렬 O(NlogN) 활용
+            for index, grouping_standard in enumerate(grouping_)
+            
     
     def pseudonymizeAmount(self, amount, grouping_standard):
         """기타 금액 범주화 메서드
