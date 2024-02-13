@@ -74,7 +74,9 @@ class CategorizationOfNumeric(Pseudonymizer):
     def pseudonymizeAmountbyBin(self, amount, grouping_standard):
         """기타 금액 구간별 범주화 메서드
         신용공여금액(예: 한도/건별대출, 담보대출, 리스/카드할부금융서비스 등)의 일정 급간화
+        다만, pd.cut과의 차별점 없으며, pandas 내장 함수를 활용하여 범주화하는 것이 훨씬 효율적
         """
+        pass
         
     def pseudonymizeAmountbyPct(self, amount, grouping_standard):
         """기타 금액 백분위에 의한 범주화 메서드
