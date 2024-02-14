@@ -30,27 +30,40 @@ class CategorizationOfCharacter(Pseudonymizer):
             raise ValueError(f"{self.category_type}은 유효한 범주화 기법 적용 유형이 아닙니다.")
     
     def pseudonymizeDate(self, date_time):
-        """개인과 관련된 날짜 정보(자격 취득일짜, 합격일 등)는 연 단위로 처리"""
+        """개인과 관련된 날짜 정보(자격 취득일자, 합격일 등)는 연 단위로 처리"""
         if isinstance(date_time, datetime):
             # datetime.datetime객체일 경우 날짜 문자열로 반환
-            date_time = date_time.strftime("%Y-%m-%d")
+            # 2023-06-03
+            date_time = date_time.strftime("%Y-%m")
+            return date_time
         try:
-            date = datetime.strptime(date_time, "%Y-%m")
-            # 연월만 남기고 일시 삭제
-            return date.strftime("%Y-%m")
+            # 날짜 문자열의 길이를 확인하여 연월일인지 연월인지 구분
+            if len(date_time) == 8:
+            # 20230603
+                date = datetime.strptime(date_time, "%Y%m%d")
+                return date.strftime("%Y-%m")  
+                # 일시 삭제 후 연월로 변환
+            elif len(date_time) == 6:
+            # 202306
+                date = datetime.strptime(date_time, "%Y%m")
+                return date.strftime("%Y-%m")  
+                # datetime 형식이 아닐 때, 연월로 변환
+            else:
+                raise ValueError(f"{date_time}은 유효한 날짜 형식이 아닙니다.")
         except ValueError:
-            return f"{datetime}은 유효한 날짜 형식이 아닙니다."
+            return f"{date_time}은 유효한 날짜 형식이 아닙니다."  
+            # 에러 출력문 수정
     
     def pseudonymizeDefinition(self, string_tobeclassified, category_mapping: dict):
         """직접 특정 범주에 속하는 문자열 리스트를 딕셔너리 키, 값으로 입력
         서울특별시 141,704개의 고유필지 → 2023년 기준 서울특별시 1,650개의 골목상권코드으로 그룹핑할 수 있도록 유형화
         코스피 상장주식회사 종목 810개 → 24개 업종 분류로 범주화"""
-        for category, string_list in self.category_mapping.items():
+        for category, string_list in category_mapping.items():
             # key는 범주이면서 value는 문자열 리스트일 때
             if string_tobeclassified in string_list: 
                 # 입력받은 문자열이 for루프에 걸린 문자열 리스트의 원소인 경우 해당 범주형 반환
                 # 접근 연산 시간복잡도를 줄이기 위한 시도는?
                 # 현재의 배열과 같이 링크드 리스트의 경우 원하는 노드에 접근하는 시간은 몇 번째 인덱스인지에 비례
                 return category
-            return "other types"
+        return "other types"
             # 없으면 기타
