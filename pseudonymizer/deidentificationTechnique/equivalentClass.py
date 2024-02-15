@@ -46,9 +46,4 @@ class EquivalentClass:
         for group_key, index_value in self.equivalent_class.items():
             unique_record = self._dataframe.loc[index_value, :].drop_duplicates()
             # set(self._dataframe.loc[index_value, :])
-<<<<<<< HEAD
             self.equivalent_class[group_key] = unique_records.index.tolist()
-=======
-            self.equivalent_class[group_key] = unique_records.index.tolist()
-            
->>>>>>> 08427ab4fe741031259ea296138ca303042b4fc1

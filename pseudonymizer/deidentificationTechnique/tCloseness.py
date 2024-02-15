@@ -1,6 +1,6 @@
 # ./pseudonymizer/pseudonymizer/deidentificationTechnique/tCloseness.py
 
-from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalent_class import EquivalentClass
+from pseudonymizer.deidentificationTechnique.equivalentClass import EquivalentClass
 from typing import *
 from scipy.stats import wasserstein_distance
 

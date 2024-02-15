@@ -1,7 +1,8 @@
 # ./pseudonymizer/pseudonymizer/deidentificationTechnique/lDiversity.py
 
-from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalentClass import EquivalentClass
+from pseudonymizer.deidentificationTechnique.equivalentClass import EquivalentClass
 from typing import *
+from pseudonymizer.deidentificationTechnique.kAnonymity import K_Anonymity
 
 class L_Diversity(K_Anonymity):
     """각 동질집합 내 특정 민감 속성의 빈도가 L값 이상의 다양성을 가지도록 하는 L-다양성 클래스

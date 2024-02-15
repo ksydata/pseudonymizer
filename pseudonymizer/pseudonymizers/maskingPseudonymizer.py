@@ -1,3 +1,4 @@
+from pseudonymizer.pseudonymizer import Pseudonymizer
 from pseudonymizer.pseudonymizers.nameMasking import NameMaskingModule
 from pseudonymizer.pseudonymizers.emailMasking import EmailMaskingModule
 from pseudonymizer.pseudonymizers.residentNumMasking import ResidentNumberMaskingModule
