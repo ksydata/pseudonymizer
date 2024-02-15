@@ -10,7 +10,8 @@ class Pseudonymizer(ABC):
     def pseudonymizeData(self, value):
         """확장성을 갖춘 가명처리 클래스를 만들어 특정 가명처리 기법으로 구체화하기 위한 추상 메서드"""
         pass
-    
+
+
 class Pseudonym:
     def __init__(self, dataframe):
         """원본정보(재현데이터)와 가명처리 구체 클래스를 인스턴스 변수로 선언하는(초기화) 생성자"""
@@ -54,9 +55,11 @@ class Pseudonym:
         """가명처리 기법을 해당 컬럼에 적용하는 메서드(apply함수를 활용하여 데이터프레임 모든 행, 특정 열에 비식별조치를 취하는 접근방식) """
         for column, pseudonymizers in self._pseudonymDictionary.items():
             for pseudonymizer in pseudonymizers:
-                self._dataframe[column] = self._dataframe[column].apply(pseudonymizer.pseudonymizeData)
+                if isinstance(pseudonymizer, CategorizationOfColumn) or isinstance(pseudonymizer, MicroAggregation):
+                    self._dataframe[column] = pseudonymizer.pseudonymizeData(self._dataframe[column])
+                else:
+                    self._dataframe[column] = self._dataframe[column].apply(pseudonymizer.pseudonymizeData)
 
     def getPseudonymizedDataframe(self):
         """가명처리 데이터 반환"""
         return self._dataframe
-    
