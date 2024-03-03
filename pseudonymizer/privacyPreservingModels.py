@@ -22,17 +22,27 @@ class PrivacyPreservingModel:
         keyword arguments에 딕셔너리 형식으로 각 기법에 필요한 파라미터를 받아옴"""
         if method == "K":
             self.Kanonymity.applyKAnonymity(**kwargs)
+            # K: int, attribute: List[str]
             return self.Kanonymity.K_data
         elif method == "L":
             self.Ldiversity.applyLDiversity(**kwargs)
+            # K: int, L: int, attribute: List[str], sensitive_attribute
             return self.Ldiversity.L_data
-        elif method == "LL":            
-            self.Ldiversity.applyLocalLDiversity(**kwargs)
-            return self.Ldiversity.LocalL_data
+        
+    def applyLocalLDiversity(self, LocalL: int, **kwargs):
+        self.Ldiversity.applyLDiversity(**kwargs)
+        # K: int, L: int, attribute: List[str], sensitive_attribute
+        self.Ldiversity.applyLocalLDiversity(LocalL)
+        # local_L: int
+        return self.Ldiversity.LocalL_data
 
     def applyTCloseness(self, aquasi_identifiers: List[str], sensitive_attribute: str, tolerance: float):
         self.Tcloseness.applyTCloseness(quasi_identifiers, tolerance, sensitive_attribute)
         return self.Tcloseness.T_data
+    
+    def applyDPrivacy(self):
+        """차분 프라이버시 기법(차등적 정보보호 기능)을 적용하는 메서드"""
+        pass
     
     def __str__(self):
         """동질집합에 대한 정보를 문자열로 반환하는 메서드"""
