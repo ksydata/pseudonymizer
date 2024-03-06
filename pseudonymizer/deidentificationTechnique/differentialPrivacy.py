@@ -8,6 +8,11 @@ from typing import *
 # from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalentClass import EquivalentClass
 # from typing import *
 
+# ./pseudonymizer/pseudonymizer/deidentificationTechnique/differentialPrivacy.py
+
+# from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalentClass import EquivalentClass
+# from typing import *
+
 class DifferentialPrivacy(EquivalentClass):
     """차분 프라이버시 클래스
     차등적 정보보호 기능을 수행"""
@@ -18,35 +23,35 @@ class DifferentialPrivacy(EquivalentClass):
         self.upperoutlier_dictionary = {}
         self.loweroutlier_dictionary = {}
         self.sensitive_attribute = None
+        
         # ratio_bounded = epsilon(개인정보(가명정보) 보호 수준 결정)
-        self.ratio_bounded = None 
+        self.ratio_bounded = None
         self.sensitivity = None
     
-    def dataDeviatingfromCI(self, attributes, sensitive_attribute):
-        super().categorizeEquivalentClass(attributes)
+    def dataDeviatingfromCI(self, boundary: float, attributes: List[str], sensitive_attribute: str):
         """동질집합 내 평균에서 양쪽 3표준편차의 범위 99.7%에 들지 않는 민감정보 행 번호만 별도로 추출하는 메서드"""
+        super().categorizeEquivalentClass(attributes)
         for group_key, index_value in self.equivalent_class.items():
-            group_data = self._dataframe.loc[index_value, sensitive_attribute]
-            mu = np.nanmean(group_data)
-            sigma = np.nanstd(group_data)
+            mu = np.nanmean(self._dataframe.loc[index_value, sensitive_attribute])
+            sigma = np.nanstd(self._dataframe.loc[index_value, sensitive_attribute])
             
-            for x in group_data:
-                if -mu+3*sigma <= x <= mu+3*sigma:
+            for i in index_value:
+                x = self._dataframe.loc[i, sensitive_attribute]
+                if mu-boundary*sigma <= x <= mu+boundary*sigma:
                     pass
-                elif x > mu+3*sigma:
-                    self.upperoutlier_dictionary[group_key] = x
-                elif x < -mu+3*sigma:
-                    self.loweroutlier_dictionary[group_key] = x
+                elif x > mu+boundary*sigma:
+                    self.upperoutlier_dictionary.setdefault(group_key, []).append(i)
+                elif x < mu-boundary*sigma:
+                    self.loweroutlier_dictionary.setdefault(group_key, []).append(i)
                 else:
                     raise ValueError(f"{x}은 유효한 수가 아닙니다.")
-                break
     
     def dataGlobalSensitivity(self):
         """특정 레코드(식별가능한 개인) 유무에 따른 민감도 산출하는 메서드
         특정 결과를 얻기 위한 쿼리 K를 각 데이터에 적용한 결과인 K(D1)와 K(D2)가 동일한 분포 S에 속할
         확률의 비율(두 데이터 분포의 차이)을 일정 수준(epsilon)보다 작도록 함
         """
-        pass    
+        pass
     
     def gaussianMechanism(self, ratio_bounded: float):
         """가우스 메커니즘을 적용하여 특정 데이터 행에 랜덤 노이즈값을 추가하는 메서드"""
