@@ -2,9 +2,6 @@ from pseudonymizer.pseudonymizer import Pseudonymizer
 from numpy import dot
 from numpy.linalg import norm
 
-from numpy import dot
-from numpy.linalg import norm
-
 class PseudonymUtilityMeasure(Pseudonym):
     """가명처리 기법이 적용된 개인정보(가명정보)의 유용성을 측정하는 지표"""
     def __init__(self, dataframe, attributes, pseudonymizeddata):
@@ -74,15 +71,25 @@ class PseudonymUtilityMeasure(Pseudonym):
     def meanGeneralizedDifference(cls, x, y):
         """카테고리형 트리 구조를 갖는 문자 속성집합들 간의 평균 차이 계산 메서드
         원본과 비식별 동일 문자 속성집합 간 일반화된 차이"""
+        # ???
         pass
     
     @classmethod
     def standardizedEuclidianDistanceSSE(cls, x, y):
         """표준화된 유클리디안 거리를 이용한 제곱합오차 계산 메서드"""
-        pass
+        standardized_x = (x - np.mean(x)) / np.std(x)
+        standardized_y = (x - np.mean(y)) / np.std(y)
+        # 표준화할 때 결측값(NA)에 대한 고려가 미비한 점이 남아있는 과제
+        std_squared_error = np.sum( (standardized_x - standardized_y)**2 )
+        return std_squared_error
                       
     @classmethod    
     def pseudonymRatio(cls, x, y):
         """원본 데이터셋 대비 가명처리된 데이터셋의 정보량 계산 메서드
-        현실적으로 가명처리 유무를 행렬을 순회하면서 발라내는게 가능한지 고민이 필요한 파트"""
+        현실적으로 가명처리 유무를 행렬을 순회하면서 발라내는게 가능한지 고민이 필요한 파트
+        """
+        # if self._dataframe.shape[0] != 0:
+            # original_shape = self._dataframe.shape[0]
+            # pseudonym_shape = self.pseudonymizeddata.shape[0] # ???
+            # return pseudonym_shape / original_shape
         pass
