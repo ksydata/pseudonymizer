@@ -4,12 +4,6 @@ from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalent_class impo
 from typing import *
 from scipy.stats import wasserstein_distance
 
-# ./pseudonymizer/pseudonymizer/deidentificationTechnique/tCloseness.py
-
-# from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalent_class import EquivalentClass
-
-# from typing import *
-# from scipy.stats import wasserstein_distance
 
 class T_Closeness(EquivalentClass):
     """민감 정보(SA)의 분포를 전체 데이터 셋의 분포와 유사하도록 하는 T-근접성 클래스
@@ -59,8 +53,9 @@ class T_Closeness(EquivalentClass):
             ordered_vector = np.sort(sensitive_vector)
             unique_value, counts = np.unique(ordered_vector, return_counts = True)
             distribution = np.cumsum(counts) / len(sensitive_vector)
-            print( unique_value, cumulative_distribution )
-            return unique_value, cumulative_distribution
+            
+            print(unique_value)
+            print(cumulative_distribution)
     
         elif sensitive_vector.dtype in ["object", "category"]:
             # cumulative_distribution = {v: count/len(v) for (v, count) in Counter(sensitive_vector).items()}
@@ -68,9 +63,12 @@ class T_Closeness(EquivalentClass):
                 probability = count / len(sensitive_vector)
                 cumulative_probability += probability
                 cumulative_distribution[value] = cumulative_probability
+            
             print(cumulative_distribution)
+        
         else: 
             raise ValueError("입력받은 {}은 유효한 자료형이 아닙니다.".format(dataseries.dtype))
+        
         return cumulative_distribution
         # UnboundLocalError: local variable 'distribution' referenced before assignment
     
@@ -80,13 +78,16 @@ class T_Closeness(EquivalentClass):
         # eucdistance = np.sqrt((qi_dist - total_dist)**2)
         # emdistance = np.sum(np.abs(qi_dist - total_dist))
         emdvalues: List = []
+        
         for key in qi_dist:
             emdvalue = np.sum( np.abs(qi_dist[key] - total_dist[key]) )
+            # TypeError: unsupported operand type(s) for -: 'dict' and 'dict'
             emdvalues.append(emdvalue)
-        emdistance = np.mean(emdvalue)
+        emdistance = np.mean(emdvalues)
+        
         return emdistance
 
-    def applyTCloseness(self, quasi_identifiers: List[str], tolerance: float, sensitive_attribute: str):
+    def applyTCloseness(self, quasi_identifiers, tolerance: float, sensitive_attribute: str):
         """tolerance: 허용가능한 확률분포 차이의 범위를 정의하여 T-근접성을 적용하는 메서드"""
         T_data = dict()
         qi_distribution, total_distribution = {}, {}
@@ -100,9 +101,10 @@ class T_Closeness(EquivalentClass):
                 # 1. Empirical Cummulative Probability Distribution
                 qi_distribution[group_key] = self.checkSensitivesDistribution(vector[index_value])
                 total_distribution[group_key] = self.checkSensitivesDistribution(vector)
-
                     # self._dataframe.loc[index_value, sensitive_attribute]
                     # .value_count(normalize = True) = .value_counts() / sum 
+                print(qi_distribution, total_distribution)
+                break
 
                 # 2. Earth's Mover Distance
                 emd = self.earthMoversDistance(qi_distribution, total_distribution)
