@@ -2,19 +2,10 @@
 
 from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalentClass import EquivalentClass
 from typing import *
-from numpy import exp
-from scipy.stats import laplace
+from scipy.stats import norm
 
-from pseudonymizer.pseudonymizer.deidentificationTechnique.equivalentClass import EquivalentClass
-from typing import List
-import numpy as np
-from numpy import exp
-from scipy.stats import laplace
-
-class DifferentialPrivacy(EquivalentClass):
-    """라플라스 메커니즘 적용 차분 프라이버시 클래스
-    차등적 정보보호 기능을 수행"""
-    
+class GaussianDifferentialPrivacy(EquivalentClass):
+    """가우시안 메커니즘 적용 차분 프라이버시 클래스"""
     def __init__(self, dataframe, ratio_bounded: float):
         super().__init__(dataframe)
         # 동질집합을 키로하고 인덱스 번호를 값으로 하는 신뢰구간 초과하는 값을 
@@ -62,7 +53,7 @@ class DifferentialPrivacy(EquivalentClass):
                     group_data = self._dataframe.loc[group_list, self.sensitive_attribute]
                     exception_data = self._dataframe.loc[exception_list, self.sensitive_attribute]
 
-                    pseudonymize_data = self.laplaceMechanism(
+                    pseudonymize_data = self.gaussianMechanism(
                         group_data, exception_data, self._dataframe.loc[i, self.sensitive_attribute], outlier)
                     self._dataframe.loc[i, self.sensitive_attribute] = pseudonymize_data
         
@@ -76,47 +67,43 @@ class DifferentialPrivacy(EquivalentClass):
                     group_data = self._dataframe.loc[group_list, self.sensitive_attribute]
                     exception_data = self._dataframe.loc[exception_list, self.sensitive_attribute]
 
-                    pseudonymize_data = self.laplaceMechanism(
+                    pseudonymize_data = self.gaussianMechanism(
                         group_data, exception_data, self._dataframe.loc[i, self.sensitive_attribute], outlier)
                     self._dataframe.loc[i, self.sensitive_attribute] = pseudonymize_data
 
-    @staticmethod
-    def estimateLaplaceParameters(cls, data):
-        """라플라스 분포의 모수 평균(mu)과 스케일(beta)을 추정하는 메서드"""
+    def estimateGaussianParameters(self, data):
+        """정규분포의 모수 평균(mu)과 표준편차(sigma)를 추정하는 메서드"""
         mu = np.nanmean(data)
-        beta = np.nanmean(np.abs(data - mu))
-        return mu, beta
-
-    @staticmethod
-    def laplacePDF(cls, x, mu, beta):
-        """라플라스 연속확률분포 확률밀도함수
+        sigma = np.nanstd(data)
+        return mu, sigma
+    
+    def gaussianPDF(self, x, mu, sigma):
+        """정규분포(가우시안) 확률밀도함수
         확률분포(확률변수가 특정한 값을 가질 확률을 나타내는 함수)"""
-        return (1 / (2*beta)) * exp(-abs(x-mu) / beta)
+        return (1 / sqrt(2*pi*sigma**2)) * exp(-0.5*((x-mu) / sigma)**2)
 
-    @staticmethod
-    def calculateProbabilityRatio(cls, include_data, exclude_data):
-        """확률변수 x가 라플라스 분포에 속할 확률과 특정 행의 포함 여부 데이터 간 비율을 계산하는 메서드"""
-        # 두 데이터의 평균과 스케일 파라미터를 추정
-        mu_include, beta_include = cls.estimateLaplaceParameters(include_data)
-        mu_exclude, beta_exclude = cls.estimateLaplaceParameters(exclude_data)
+    def calculateProbabilityRatio(self, include_data, exclude_data):
+        """확률변수 x가 정규분포에 속할 확률과 특정 행의 포함 여부 데이터 간 비율을 계산하는 메서드"""
+        # 두 데이터의 평균과 표준편차 파라미터를 추정
+        mu_include, sigma_include = self.estimateGaussianParameters(include_data)
+        mu_exclude, sigma_exclude = self.estimateGaussianParameters(exclude_data)
         
-        # 두 데이터의 라플라스 분포에 속할 확률 계산
-        prob_include = cls.laplacePDF(include_data, mu_include, beta_include)
-        prob_exclude = cls.laplacePDF(exclude_data, mu_exclude, beta_exclude)
+        # 두 데이터의 정규분포에 속할 확률 계산
+        prob_include = self.gaussianPDF(include_data, mu_include, sigma_include)
+        prob_exclude = self.gaussianPDF(exclude_data, mu_exclude, sigma_exclude)
         prob_ratio = prob_include / prob_exclude
         
-        # 두 데이터의 라플라스 분포에 속할 확률의 비율 계산
+        # 두 데이터의 정규분포에 속할 확률의 비율 계산
         return prob_ratio
-
-    @staticmethod
-    def laplaceMechanism(cls, include_data, exclude_data, particular_record, outlier):
-        """라플라스 메커니즘을 적용하여 특정 데이터 행에 랜덤 노이즈값을 추가하는 메서드"""
+    
+    def gaussianMechanism(self, include_data, exclude_data, particular_record, outlier):
+        """가우스 메커니즘을 적용하여 특정 데이터 행에 랜덤 노이즈값을 추가하는 메서드"""
         # 전역 민감도 계산
-        sensitivity = cls.calculateProbabilityRatio(include_data, exclude_data)
+        sensitivity = self.calculateProbabilityRatio(include_data, exclude_data)
         # 사용자 지정 개인정보 보호 수전 하이퍼파라미터 엡실론을 통해 스케일 파라미터 정의
-        beta = sensitivity / cls.ratio_bounded
-        # 평균 0, 베타를 분산으로 가지는 라플라스 분포에 속하는 랜덤 난수 추출
-        noise = np.random.laplace(0, beta, len(include_data))
+        beta = sensitivity / self.ratio_bounded
+        # 평균 0, 시그마 값을 분산으로 가지는 정규분포에 속하는 랜덤 난수 추출
+        noise = np.random.normal(0, sigma, len(data))
         
         # 이상치에 노이즈 추가
         if outlier == "lower":
@@ -124,4 +111,4 @@ class DifferentialPrivacy(EquivalentClass):
         elif outlier == "upper":
             return particular_record - noise
         else:
-            raise ValueError(f"{outlier}은 유효한 이상치 유형이 아닙니다.")
+            raise ValueError(f"{x}은 유효한 이상치 유형이 아닙니다.")
