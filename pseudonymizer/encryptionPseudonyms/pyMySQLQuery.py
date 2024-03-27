@@ -1,4 +1,5 @@
-from pseudonymizer.encryptionPseudonyms.abstractpreprocessQuery import PreprocessQuery
+import pymysql
+from pseudonymizer.encryptionPseudonyms.abstractPreprocessQuery import PreprocessQuery
 from typing import *
 
 class PyMySQLQuery(PreprocessQuery):
@@ -30,6 +31,15 @@ class PyMySQLQuery(PreprocessQuery):
         
         except pymysql.Error as e:
             print(f"Error Executing Query: {e}")
+
+    def useFetchallQuery(self):
+        """SQL 쿼리 실행 결과의 cursor.fetchall() 을 사용할 수 있도록 하는 메서드"""
+        try:
+            action_output = self.DBconnection.cursor.execute(self.SQL)
+            records = self.DBconnection.cursor.fetchall()
+            return records
+        except pymysql.Error as e:
+            print(f"Executing query error: {e}")
     
     def commitTransaction(self):
         """실행결과를 확정(트랜잭션을 커밋)하는 메서드"""
